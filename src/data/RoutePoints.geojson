@@ -1,0 +1,28 @@
+{
+"type": "FeatureCollection",
+"name": "RoutePoints",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Seq": 1, "AWD": "DCT", "PointFromName": "MMV", "Lat": 12.9875, "Lon": 80.155 }, "geometry": { "type": "Point", "coordinates": [ 80.155, 12.9875 ] } },
+{ "type": "Feature", "properties": { "Seq": 2, "AWD": "DCT", "PointFromName": "MM610", "Lat": 13.29138889, "Lon": 80.07944444 }, "geometry": { "type": "Point", "coordinates": [ 80.07944444, 13.29138889 ] } },
+{ "type": "Feature", "properties": { "Seq": 3, "AWD": "DCT", "PointFromName": "RAMDO", "Lat": 13.56944444, "Lon": 79.79722222 }, "geometry": { "type": "Point", "coordinates": [ 79.79722222, 13.56944444 ] } },
+{ "type": "Feature", "properties": { "Seq": 4, "AWD": "Q24", "PointFromName": "KAMGU", "Lat": 14.975, "Lon": 79.41972222 }, "geometry": { "type": "Point", "coordinates": [ 79.41972222, 14.975 ] } },
+{ "type": "Feature", "properties": { "Seq": 5, "AWD": "DCT", "PointFromName": "KIKUR", "Lat": 15.98194444, "Lon": 79.17555556000001 }, "geometry": { "type": "Point", "coordinates": [ 79.17555556, 15.98194444 ] } },
+{ "type": "Feature", "properties": { "Seq": 6, "AWD": "W27", "PointFromName": "HIA", "Lat": 17.22777778, "Lon": 78.40583333 }, "geometry": { "type": "Point", "coordinates": [ 78.40583333, 17.22777778 ] } },
+{ "type": "Feature", "properties": { "Seq": 7, "AWD": "W27", "PointFromName": "KAMSI", "Lat": 17.33416667, "Lon": 77.88194444 }, "geometry": { "type": "Point", "coordinates": [ 77.88194444, 17.33416667 ] } },
+{ "type": "Feature", "properties": { "Seq": 8, "AWD": "W27", "PointFromName": "BR", "Lat": 17.92305556, "Lon": 77.50138889 }, "geometry": { "type": "Point", "coordinates": [ 77.50138889, 17.92305556 ] } },
+{ "type": "Feature", "properties": { "Seq": 9, "AWD": "W27", "PointFromName": "PEDMA", "Lat": 18.97722222, "Lon": 77.99694444 }, "geometry": { "type": "Point", "coordinates": [ 77.99694444, 18.97722222 ] } },
+{ "type": "Feature", "properties": { "Seq": 10, "AWD": "W27", "PointFromName": "BUSBO", "Lat": 19.24944444, "Lon": 78.125 }, "geometry": { "type": "Point", "coordinates": [ 78.125, 19.24944444 ] } },
+{ "type": "Feature", "properties": { "Seq": 11, "AWD": "W27", "PointFromName": "VOMF/VABF/W27/Q28", "Lat": 19.50444444, "Lon": 78.25194444 }, "geometry": { "type": "Point", "coordinates": [ 78.25194444, 19.50444444 ] } },
+{ "type": "Feature", "properties": { "Seq": 12, "AWD": "Q24", "PointFromName": "SUDEL", "Lat": 19.57166667, "Lon": 78.28861111000001 }, "geometry": { "type": "Point", "coordinates": [ 78.28861111, 19.57166667 ] } },
+{ "type": "Feature", "properties": { "Seq": 13, "AWD": "Q24", "PointFromName": "TASEX", "Lat": 20.565, "Lon": 78.02694444 }, "geometry": { "type": "Point", "coordinates": [ 78.02694444, 20.565 ] } },
+{ "type": "Feature", "properties": { "Seq": 14, "AWD": "Q24", "PointFromName": "RENAG", "Lat": 22.05333333, "Lon": 77.65888889 }, "geometry": { "type": "Point", "coordinates": [ 77.65888889, 22.05333333 ] } },
+{ "type": "Feature", "properties": { "Seq": 15, "AWD": "Q24", "PointFromName": "BPL", "Lat": 23.28277778, "Lon": 77.33583333 }, "geometry": { "type": "Point", "coordinates": [ 77.33583333, 23.28277778 ] } },
+{ "type": "Feature", "properties": { "Seq": 16, "AWD": "Q24", "PointFromName": "PUKES", "Lat": 24.70055556, "Lon": 77.27 }, "geometry": { "type": "Point", "coordinates": [ 77.27, 24.70055556 ] } },
+{ "type": "Feature", "properties": { "Seq": 17, "AWD": "Q24", "PointFromName": "BUKLO", "Lat": 25.00027778, "Lon": 77.25722222 }, "geometry": { "type": "Point", "coordinates": [ 77.25722222, 25.00027778 ] } },
+{ "type": "Feature", "properties": { "Seq": 18, "AWD": "Q24", "PointFromName": "BAVOX", "Lat": 26.14194444, "Lon": 77.21555556 }, "geometry": { "type": "Point", "coordinates": [ 77.21555556, 26.14194444 ] } },
+{ "type": "Feature", "properties": { "Seq": 19, "AWD": "Q24", "PointFromName": "SURGO", "Lat": 27.48361111, "Lon": 77.14611111000001 }, "geometry": { "type": "Point", "coordinates": [ 77.14611111, 27.48361111 ] } },
+{ "type": "Feature", "properties": { "Seq": 20, "AWD": "Q24", "PointFromName": "SAPLO", "Lat": 27.64833333, "Lon": 77.1375 }, "geometry": { "type": "Point", "coordinates": [ 77.1375, 27.64833333 ] } },
+{ "type": "Feature", "properties": { "Seq": 21, "AWD": "Q24", "PointFromName": "DPN", "Lat": 28.56833333, "Lon": 77.09333333 }, "geometry": { "type": "Point", "coordinates": [ 77.09333333, 28.56833333 ] } }
+]
+}
