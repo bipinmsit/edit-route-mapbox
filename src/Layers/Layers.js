@@ -75,7 +75,7 @@ const Layers = () => {
         data: RoutePoints,
       });
       map.addLayer({
-        id: "RoutePoints",
+        id: "RoutePointsLabel",
         type: "symbol",
         source: "RoutePoints",
         paint: { "text-color": "blue" },
@@ -141,7 +141,6 @@ const Layers = () => {
           "text-variable-anchor": ["top", "bottom", "left", "right"],
           "text-radial-offset": 0.5,
           "text-justify": "auto",
-          "icon-image": ["concat", ["get", "icon"], "-15"],
           "text-size": 8,
         },
         paint: {
@@ -149,6 +148,7 @@ const Layers = () => {
         },
       });
 
+      // Add mapbox draw control
       const draw = new MapboxDraw({
         modes: {
           ...MapboxDraw.modes,
@@ -169,6 +169,13 @@ const Layers = () => {
       map.addControl(draw, "top-right");
 
       draw.add(RouteMerged);
+
+      map.on("draw.update", () => {
+        console.log(draw.getAll());
+      });
+
+      // // It will list all the layers
+      // console.log(map.getStyle().layers);
 
       return () => {
         map.removeLayer("RoutePoints");
