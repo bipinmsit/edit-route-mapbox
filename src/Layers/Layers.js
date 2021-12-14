@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { MapContextMapbox } from "../Map/Mapbox";
-import { Route, RouteMerged, RoutePoints } from "./GeoJSONFile";
+import { NewWayPoint, RouteMerged, RoutePoints } from "./GeoJSONFile";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import * as turf from "@turf/turf";
 import {
@@ -14,34 +14,32 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 const Layers = () => {
   const { map } = useContext(MapContextMapbox);
 
-  const coordinates = document.getElementById("coordinates");
+  // useEffect(() => {
+  //   if (!map) {
+  //     return;
+  //   }
 
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    // Adding Buffer Layer
-    const buffered = turf.buffer(RouteMerged, 50, { units: "kilometers" });
-    map.on("load", () => {
-      map.addSource("Buffer", {
-        type: "geojson",
-        data: buffered,
-      });
-      map.addLayer({
-        id: "Buffer",
-        type: "fill",
-        source: "Buffer",
-        paint: {
-          "fill-color": "grey",
-          "fill-opacity": 0.2,
-        },
-        layout: {
-          visibility: "visible",
-        },
-      });
-    });
-  }, [map]);
+  //   // Adding Buffer Layer
+  //   const buffered = turf.buffer(RouteMerged, 50, { units: "kilometers" });
+  //   map.on("load", () => {
+  //     map.addSource("Buffer", {
+  //       type: "geojson",
+  //       data: buffered,
+  //     });
+  //     map.addLayer({
+  //       id: "Buffer",
+  //       type: "fill",
+  //       source: "Buffer",
+  //       paint: {
+  //         "fill-color": "grey",
+  //         "fill-opacity": 0.2,
+  //       },
+  //       layout: {
+  //         visibility: "visible",
+  //       },
+  //     });
+  //   });
+  // }, [map]);
 
   useEffect(() => {
     if (!map) {
@@ -50,10 +48,10 @@ const Layers = () => {
 
     // Load all the layers
     map.on("load", () => {
-      // Adding of Route Layer
+      // Adding Route Layer
       map.addSource("Route", {
         type: "geojson",
-        data: Route,
+        data: RouteMerged,
       });
       map.addLayer({
         id: "Route",
@@ -61,7 +59,7 @@ const Layers = () => {
         source: "Route",
         paint: {
           "line-color": "blue",
-          "line-width": 2,
+          "line-width": 1,
           "line-opacity": 1,
         },
         layout: {
@@ -149,6 +147,7 @@ const Layers = () => {
       });
 
       // Add mapbox draw control
+      const modes = MapboxDraw.modes;
       const draw = new MapboxDraw({
         modes: {
           ...MapboxDraw.modes,
@@ -161,21 +160,48 @@ const Layers = () => {
         snap: true,
         snapOptions: {
           snapPx: 15, // defaults to 15
-          snapToMidPoints: true, // defaults to false
+          snapToMidPoints: false, // defaults to false
           snapVertexPriorityDistance: 1.25, // defaults to 1.25
         },
         guides: true,
       });
+
+      // console.log(draw.getMode());
+      // modes.STATIC = "static";
+      modes.DIRECT_SELECT = "direct_select";
+
       map.addControl(draw, "top-right");
-
       draw.add(RouteMerged);
+      map.on("draw.update", (e) => {
+        const data = draw.getAll();
 
-      map.on("draw.update", () => {
-        console.log(draw.getAll());
+        let nearestWayPoint = turf.nearestPoint(
+          turf.point(draw.getSelectedPoints().features[0].geometry.coordinates),
+          NewWayPoint
+        );
+
+        let nearestWayPointCoords = nearestWayPoint.geometry.coordinates;
+
+        draw.getSelectedPoints().features[0].geometry.coordinates =
+          nearestWayPointCoords;
+
+        map.getSource("Route").setData(draw.getAll());
+        // draw.set({
+        //   type: "FeatureCollection",
+        //   features: [nearestPoint],
+        // });
+
+        console.log(draw.getSelectedPoints().features[0].geometry.coordinates);
+
+        console.log(nearestWayPointCoords);
+
+        console.log(data.features[0].geometry.coordinates);
       });
 
       // // It will list all the layers
       // console.log(map.getStyle().layers);
+
+      // console.log(map.getSource("Route"));
 
       return () => {
         map.removeLayer("RoutePoints");
@@ -187,13 +213,9 @@ const Layers = () => {
         map.removeControl(draw);
       };
     });
-  }, [coordinates, map]);
+  }, [map]);
 
-  return (
-    <div>
-      <div id="coordinates"></div>
-    </div>
-  );
+  return null;
 };
 
 export default Layers;
