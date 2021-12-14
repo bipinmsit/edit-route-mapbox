@@ -215,8 +215,8 @@ const Layers = () => {
         source: "NewWayPoint",
         "source-layer": "NewWayPoint-6ug16e",
         paint: {
-          "circle-radius": 3,
-          "circle-color": "blue",
+          "circle-radius": 2,
+          "circle-color": "black",
           "circle-stroke-color": "white",
           "circle-stroke-width": 1,
           "circle-opacity": 0.5,
@@ -303,8 +303,8 @@ const Layers = () => {
         map.removeLayer("NewWayPoint");
         map.removeSource("NewWayPoint");
 
-        map.removeLayer("RoutePoints");
-        map.removeSource("RoutePoints");
+        map.removeLayer("NewWayPointLabels");
+        map.removeSource("NewWayPointLabels");
       };
     });
   }, [map]);
