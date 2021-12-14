@@ -1,49 +1,126 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MapContextMapbox } from "../Map/Mapbox";
-import { NewWayPoint, RouteMerged, RoutePoints } from "./GeoJSONFile";
-import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { NewWayPoint, Route, RoutePoints } from "./GeoJSONFile";
 import * as turf from "@turf/turf";
-import {
-  SnapPolygonMode,
-  SnapPointMode,
-  SnapLineMode,
-  SnapModeDrawStyles,
-} from "mapbox-gl-draw-snap-mode";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 const Layers = () => {
   const { map } = useContext(MapContextMapbox);
+  // const [currentFeatureId, setCurrentFeatureId] = useState(undefined);
 
-  // useEffect(() => {
-  //   if (!map) {
-  //     return;
-  //   }
-
-  //   // Adding Buffer Layer
-  //   const buffered = turf.buffer(RouteMerged, 50, { units: "kilometers" });
-  //   map.on("load", () => {
-  //     map.addSource("Buffer", {
-  //       type: "geojson",
-  //       data: buffered,
-  //     });
-  //     map.addLayer({
-  //       id: "Buffer",
-  //       type: "fill",
-  //       source: "Buffer",
-  //       paint: {
-  //         "fill-color": "grey",
-  //         "fill-opacity": 0.2,
-  //       },
-  //       layout: {
-  //         visibility: "visible",
-  //       },
-  //     });
-  //   });
-  // }, [map]);
+  var currentFeatureId = null;
 
   useEffect(() => {
     if (!map) {
       return;
+    }
+
+    var canvas = map.getCanvasContainer();
+
+    function onMove(e) {
+      var coords = e.lngLat;
+
+      // Set a UI indicator for dragging.
+      canvas.style.cursor = "grabbing";
+    }
+
+    function onUp(e) {
+      if (
+        currentFeatureId > 1 &&
+        currentFeatureId < RoutePoints.features.length
+      ) {
+        var coords = e.lngLat;
+
+        let nearestWayPoint = turf.nearestPoint(
+          [coords.lng, coords.lat],
+          NewWayPoint
+        );
+
+        let nearestWayPointCoords = nearestWayPoint.geometry.coordinates;
+
+        var newPoint = {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: nearestWayPointCoords,
+          },
+          properties: {
+            id: currentFeatureId + 1,
+          },
+        };
+
+        RoutePoints.features.splice(currentFeatureId - 1, 1, newPoint);
+        for (let i = 0; i < RoutePoints.features.length; i++) {
+          RoutePoints.features[i].properties.Seq = i + 1;
+        }
+        map.getSource("RoutePoints").setData(RoutePoints);
+
+        var curLine = 0;
+        if (currentFeatureId >= 2) {
+          curLine = currentFeatureId - 1;
+        }
+        if (curLine > 0 && curLine < Route.features.length) {
+          let isFirstSeg = false;
+          let isLastSeg = false;
+          let firstSeg;
+          let lastSeg;
+          if (Route.features.length - 2 === curLine - 1) {
+            isLastSeg = true;
+            lastSeg = [
+              Route.features[Route.features.length - 1].geometry.coordinates[0],
+              Route.features[Route.features.length - 1].geometry.coordinates[1],
+            ];
+          } else if (curLine - 1 === "0") {
+            isFirstSeg = true;
+            firstSeg = [
+              Route.features[0].geometry.coordinates[0],
+              Route.features[0].geometry.coordinates[1],
+            ];
+          }
+          Route.features.splice(curLine - 1, 2);
+
+          var vertexOne = {
+            type: "Feature",
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                isFirstSeg
+                  ? firstSeg[0]
+                  : [...Route.features[curLine - 2].geometry.coordinates[1]],
+                nearestWayPointCoords,
+              ],
+            },
+            properties: {
+              id: currentFeatureId + 1,
+            },
+          };
+          var vertexTwo = {
+            type: "Feature",
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                nearestWayPointCoords,
+                isLastSeg
+                  ? lastSeg[1]
+                  : [...Route.features[curLine - 1].geometry.coordinates[0]],
+              ],
+            },
+            properties: {
+              id: currentFeatureId + 1,
+            },
+          };
+          Route.features.splice(curLine - 1, 0, vertexOne, vertexTwo);
+
+          for (let j = 0; j < Route.features.length; j++) {
+            Route.features[j].properties.id = j + 1;
+          }
+          map.getSource("Route").setData(Route);
+          canvas.style.cursor = "";
+          // Unbind mouse/touch events
+          map.off("mousemove", onMove);
+          map.off("touchmove", onMove);
+        }
+      }
     }
 
     // Load all the layers
@@ -51,7 +128,7 @@ const Layers = () => {
       // Adding Route Layer
       map.addSource("Route", {
         type: "geojson",
-        data: RouteMerged,
+        data: Route,
       });
       map.addLayer({
         id: "Route",
@@ -59,7 +136,7 @@ const Layers = () => {
         source: "Route",
         paint: {
           "line-color": "blue",
-          "line-width": 1,
+          "line-width": 2,
           "line-opacity": 1,
         },
         layout: {
@@ -67,15 +144,36 @@ const Layers = () => {
         },
       });
 
-      // Adding Route Points Labels
+      // Adding Route Points
       map.addSource("RoutePoints", {
+        type: "geojson",
+        data: RoutePoints,
+      });
+      map.addLayer({
+        id: "RoutePoints",
+        type: "circle",
+        source: "RoutePoints",
+        paint: {
+          "circle-radius": 3,
+          "circle-color": "blue",
+          "circle-stroke-color": "white",
+          "circle-stroke-width": 1,
+          "circle-opacity": 0.5,
+        },
+        layout: {
+          visibility: "visible",
+        },
+      });
+
+      // Adding Route Points Labels
+      map.addSource("RoutePointsLabel", {
         type: "geojson",
         data: RoutePoints,
       });
       map.addLayer({
         id: "RoutePointsLabel",
         type: "symbol",
-        source: "RoutePoints",
+        source: "RoutePointsLabel",
         paint: { "text-color": "blue" },
         layout: {
           "text-field": ["get", "PointFromName"],
@@ -127,11 +225,16 @@ const Layers = () => {
           visibility: "visible",
         },
       });
+
       // Adding NewWayPoint Labels
+      map.addSource("NewWayPointLabels", {
+        type: "vector",
+        url: "mapbox://rahulsds.a2ttfiym",
+      });
       map.addLayer({
         id: "NewWayPointLabels",
         type: "symbol",
-        source: "NewWayPoint",
+        source: "NewWayPointLabels",
         "source-layer": "NewWayPoint-6ug16e",
         layout: {
           visibility: "visible",
@@ -146,56 +249,37 @@ const Layers = () => {
         },
       });
 
-      // Add mapbox draw control
-      const modes = MapboxDraw.modes;
-      const draw = new MapboxDraw({
-        modes: {
-          ...MapboxDraw.modes,
-          draw_point: SnapPointMode,
-          draw_polygon: SnapPolygonMode,
-          draw_line_string: SnapLineMode,
-        },
-        styles: SnapModeDrawStyles,
-        userProperties: true,
-        snap: true,
-        snapOptions: {
-          snapPx: 15, // defaults to 15
-          snapToMidPoints: false, // defaults to false
-          snapVertexPriorityDistance: 1.25, // defaults to 1.25
-        },
-        guides: true,
+      // When the cursor enters a feature in the point layer, prepare for dragging.
+      map.on("mouseenter", "RoutePoints", function () {
+        map.setPaintProperty("RoutePoints", "circle-color", "#3bb2d0");
+        canvas.style.cursor = "move";
       });
 
-      // console.log(draw.getMode());
-      // modes.STATIC = "static";
-      modes.DIRECT_SELECT = "direct_select";
+      map.on("mouseleave", "RoutePoints", function (e) {
+        map.setPaintProperty("RoutePoints", "circle-color", "#3887be");
+        canvas.style.cursor = "";
+      });
 
-      map.addControl(draw, "top-right");
-      draw.add(RouteMerged);
-      map.on("draw.update", (e) => {
-        const data = draw.getAll();
+      map.on("mousedown", "RoutePoints", function (e) {
+        // setCurrentFeatureId(e.features[0].properties.Seq);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        currentFeatureId = e.features[0].properties.Seq;
+        // Prevent the default map drag behavior.
+        e.preventDefault();
+        canvas.style.cursor = "grab";
 
-        let nearestWayPoint = turf.nearestPoint(
-          turf.point(draw.getSelectedPoints().features[0].geometry.coordinates),
-          NewWayPoint
-        );
+        map.on("mousemove", onMove);
+        map.once("mouseup", onUp);
+      });
 
-        let nearestWayPointCoords = nearestWayPoint.geometry.coordinates;
+      map.on("touchstart", "RoutePoints", function (e) {
+        if (e.points.length !== 1) return;
 
-        draw.getSelectedPoints().features[0].geometry.coordinates =
-          nearestWayPointCoords;
+        // Prevent the default map drag behavior.
+        e.preventDefault();
 
-        map.getSource("Route").setData(draw.getAll());
-        // draw.set({
-        //   type: "FeatureCollection",
-        //   features: [nearestPoint],
-        // });
-
-        console.log(draw.getSelectedPoints().features[0].geometry.coordinates);
-
-        console.log(nearestWayPointCoords);
-
-        console.log(data.features[0].geometry.coordinates);
+        map.on("touchmove", onMove);
+        map.once("touchend", onUp);
       });
 
       // // It will list all the layers
@@ -204,13 +288,23 @@ const Layers = () => {
       // console.log(map.getSource("Route"));
 
       return () => {
-        map.removeLayer("RoutePoints");
-        map.removeSource("RoutePoints");
-
         map.removeLayer("Route");
         map.removeSource("Route");
 
-        map.removeControl(draw);
+        map.removeLayer("RoutePoints");
+        map.removeSource("RoutePoints");
+
+        map.removeLayer("RoutePointsLabel");
+        map.removeSource("RoutePointsLabel");
+
+        map.removeLayer("NewATS");
+        map.removeSource("NewATS");
+
+        map.removeLayer("NewWayPoint");
+        map.removeSource("NewWayPoint");
+
+        map.removeLayer("RoutePoints");
+        map.removeSource("RoutePoints");
       };
     });
   }, [map]);
