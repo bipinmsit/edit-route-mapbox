@@ -8,17 +8,17 @@ const Layers = () => {
   const { map } = useContext(MapContextMapbox);
   // const [currentFeatureId, setCurrentFeatureId] = useState(undefined);
 
-  var currentFeatureId = null;
+  let currentFeatureId = null;
 
   useEffect(() => {
     if (!map) {
       return;
     }
 
-    var canvas = map.getCanvasContainer();
+    let canvas = map.getCanvasContainer();
 
     function onMove(e) {
-      var coords = e.lngLat;
+      let coords = e.lngLat;
 
       // Set a UI indicator for dragging.
       canvas.style.cursor = "grabbing";
@@ -29,7 +29,7 @@ const Layers = () => {
         currentFeatureId > 1 &&
         currentFeatureId < RoutePoints.features.length
       ) {
-        var coords = e.lngLat;
+        let coords = e.lngLat;
 
         let nearestWayPoint = turf.nearestPoint(
           [coords.lng, coords.lat],
@@ -38,7 +38,7 @@ const Layers = () => {
 
         let nearestWayPointCoords = nearestWayPoint.geometry.coordinates;
 
-        var newPoint = {
+        let newPoint = {
           type: "Feature",
           geometry: {
             type: "Point",
@@ -55,7 +55,7 @@ const Layers = () => {
         }
         map.getSource("RoutePoints").setData(RoutePoints);
 
-        var curLine = 0;
+        let curLine = 0;
         if (currentFeatureId >= 2) {
           curLine = currentFeatureId - 1;
         }
@@ -79,7 +79,7 @@ const Layers = () => {
           }
           Route.features.splice(curLine - 1, 2);
 
-          var vertexOne = {
+          let vertexOne = {
             type: "Feature",
             geometry: {
               type: "LineString",
@@ -94,7 +94,7 @@ const Layers = () => {
               id: currentFeatureId + 1,
             },
           };
-          var vertexTwo = {
+          let vertexTwo = {
             type: "Feature",
             geometry: {
               type: "LineString",
@@ -154,8 +154,8 @@ const Layers = () => {
         type: "circle",
         source: "RoutePoints",
         paint: {
-          "circle-radius": 3,
-          "circle-color": "blue",
+          "circle-radius": 4,
+          "circle-color": "black",
           "circle-stroke-color": "white",
           "circle-stroke-width": 1,
           "circle-opacity": 0.5,
@@ -251,8 +251,8 @@ const Layers = () => {
 
       // When the cursor enters a feature in the point layer, prepare for dragging.
       map.on("mouseenter", "RoutePoints", function () {
-        map.setPaintProperty("RoutePoints", "circle-color", "#3bb2d0");
-        canvas.style.cursor = "move";
+        // map.setPaintProperty("RoutePoints", "circle-color", "#3bb2d0");
+        canvas.style.cursor = "pointer";
       });
 
       map.on("mouseleave", "RoutePoints", function (e) {
