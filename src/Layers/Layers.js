@@ -252,7 +252,7 @@ const Layers = () => {
       // When the cursor enters a feature in the point layer, prepare for dragging.
       map.on("mouseenter", "RoutePoints", function () {
         // map.setPaintProperty("RoutePoints", "circle-color", "#3bb2d0");
-        canvas.style.cursor = "pointer";
+        canvas.style.cursor = "move";
       });
 
       map.on("mouseleave", "RoutePoints", function (e) {

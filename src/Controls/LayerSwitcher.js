@@ -41,20 +41,16 @@ const LayerSwitcher = () => {
     const clickedLayer = legendLayerId;
 
     const clickedTag = document.getElementById(clickedLayer);
-    clickedTag.style.backgroundColor =
-      clickedTag.style.backgroundColor === "rgb(255, 255, 255)"
-        ? "rgb(200, 200, 200)"
-        : "rgb(255, 255, 255)";
 
     const visibility = map.getLayoutProperty(clickedLayer, "visibility");
 
     // Toggle layer visibility by changing the layout object's visibility property.
     if (visibility === "visible") {
       map.setLayoutProperty(clickedLayer, "visibility", "none");
-      // this.className = "";
+      clickedTag.style.backgroundColor = "rgb(255, 255, 255)";
     } else {
-      // this.className = "active";
       map.setLayoutProperty(clickedLayer, "visibility", "visible");
+      clickedTag.style.backgroundColor = "rgb(200, 200, 200)";
     }
   };
 
