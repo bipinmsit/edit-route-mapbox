@@ -252,11 +252,22 @@ const Layers = () => {
       // When the cursor enters a feature in the point layer, prepare for dragging.
       map.on("mouseenter", "RoutePoints", function () {
         // map.setPaintProperty("RoutePoints", "circle-color", "#3bb2d0");
-        canvas.style.cursor = "move";
+        canvas.style.cursor = "default";
+      });
+
+      map.on("mousemove", "RoutePoints", function (e) {
+        map.setPaintProperty("RoutePoints", "circle-radius", [
+          "case",
+          ["==", ["get", "Seq"], e.features[0].properties.Seq],
+          9,
+          4,
+        ]);
       });
 
       map.on("mouseleave", "RoutePoints", function (e) {
-        map.setPaintProperty("RoutePoints", "circle-color", "#3887be");
+        map.setPaintProperty("RoutePoints", "circle-radius", 4);
+        map.setPaintProperty("RoutePoints", "circle-color", "blue");
+
         canvas.style.cursor = "";
       });
 
