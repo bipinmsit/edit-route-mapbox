@@ -144,46 +144,6 @@ const Layers = () => {
         },
       });
 
-      // Adding Route Points
-      map.addSource("RoutePoints", {
-        type: "geojson",
-        data: RoutePoints,
-      });
-      map.addLayer({
-        id: "RoutePoints",
-        type: "circle",
-        source: "RoutePoints",
-        paint: {
-          "circle-radius": 4,
-          "circle-color": "black",
-          "circle-stroke-color": "white",
-          "circle-stroke-width": 1,
-          "circle-opacity": 0.5,
-        },
-        layout: {
-          visibility: "visible",
-        },
-      });
-
-      // Adding Route Points Labels
-      map.addSource("RoutePointsLabel", {
-        type: "geojson",
-        data: RoutePoints,
-      });
-      map.addLayer({
-        id: "RoutePointsLabel",
-        type: "symbol",
-        source: "RoutePointsLabel",
-        paint: { "text-color": "blue" },
-        layout: {
-          "text-field": ["get", "PointFromName"],
-          "text-variable-anchor": ["right"],
-          "text-radial-offset": 1,
-          "text-justify": "auto",
-          "text-size": 8,
-        },
-      });
-
       // Adding ATS Line
       map.addSource("NewATS", {
         type: "vector",
@@ -249,6 +209,46 @@ const Layers = () => {
         },
       });
 
+      // Adding Route Points
+      map.addSource("RoutePoints", {
+        type: "geojson",
+        data: RoutePoints,
+      });
+      map.addLayer({
+        id: "RoutePoints",
+        type: "circle",
+        source: "RoutePoints",
+        paint: {
+          "circle-radius": 3.5,
+          "circle-color": "blue",
+          "circle-stroke-color": "white",
+          "circle-stroke-width": 1,
+          "circle-opacity": 0.5,
+        },
+        layout: {
+          visibility: "visible",
+        },
+      });
+
+      // Adding Route Points Labels
+      map.addSource("RoutePointsLabel", {
+        type: "geojson",
+        data: RoutePoints,
+      });
+      map.addLayer({
+        id: "RoutePointsLabel",
+        type: "symbol",
+        source: "RoutePointsLabel",
+        paint: { "text-color": "blue" },
+        layout: {
+          "text-field": ["get", "PointFromName"],
+          "text-variable-anchor": ["right"],
+          "text-radial-offset": 1,
+          "text-justify": "auto",
+          "text-size": 8,
+        },
+      });
+
       // When the cursor enters a feature in the point layer, prepare for dragging.
       map.on("mouseenter", "RoutePoints", function () {
         // map.setPaintProperty("RoutePoints", "circle-color", "#3bb2d0");
@@ -259,7 +259,7 @@ const Layers = () => {
         map.setPaintProperty("RoutePoints", "circle-radius", [
           "case",
           ["==", ["get", "Seq"], e.features[0].properties.Seq],
-          9,
+          8,
           4,
         ]);
       });
