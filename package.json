@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^12.1.10",
     "@turf/turf": "^6.5.0",
     "atob": "^2.1.2",
+    "babylon": "^6.18.0",
     "mapbox-gl": "^2.6.1",
     "mapbox-gl-draw-snap-mode": "^0.1.8",
     "react": "^17.0.2",
