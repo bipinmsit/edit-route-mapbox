@@ -53,7 +53,7 @@ const UIWork = () => {
             id="flexCheckDefault"
           />
           <label className="form-check-label" for="flexCheckDefault">
-            Default checkbox
+            ATS
           </label>
         </div>
 

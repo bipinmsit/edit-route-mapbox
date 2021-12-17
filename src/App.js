@@ -11,7 +11,7 @@ function App() {
     <>
       <div className="container-fluid mt-1">
         <div className="row">
-          <div className="col-3">
+          <div className="col-3" style={{ backgroundColor: "#87CEEB" }}>
             <UIWork />
           </div>
           <div className="col-9">
