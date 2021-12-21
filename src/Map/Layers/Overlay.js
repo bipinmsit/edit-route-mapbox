@@ -1,14 +1,61 @@
-import { useContext, useEffect } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { MapContextMapbox } from "../Mapbox";
-import { NewWayPoint, Route, RoutePoints } from "./GeoJSONFile";
+import NewATS from "../../Data/NewATS.geojson";
+import { NewWayPoint, Route, RoutePoints, RouteMerged } from "./GeoJSONFile";
 import * as turf from "@turf/turf";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 const Overlay = () => {
   const { map } = useContext(MapContextMapbox);
   // const [currentFeatureId, setCurrentFeatureId] = useState(undefined);
+  // const [atsFile, setAtsFile] = useState([]);
+  // const [linesArray, setLinesArray] = useState([]);
 
   let currentFeatureId = null;
+  let linesArray = [];
+  const buffered = turf.buffer(RouteMerged, 100, { units: "kilometers" });
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    const getATSFile = async () => {
+      await fetch(NewATS)
+        .then((res) => res.json())
+        .then((output) => {
+          turf.featureEach(output, (line) => {
+            if (
+              turf.booleanContains(
+                buffered.features[0],
+                turf.bboxPolygon(turf.bbox(line))
+              )
+            ) {
+              linesArray.push(line);
+            }
+          });
+        });
+    };
+
+    getATSFile().then(() => {
+      console.log(turf.featureCollection(linesArray));
+      map.on("load", () => {
+        map.addSource("filteredFeature", {
+          type: "geojson",
+          data: turf.featureCollection(linesArray),
+        });
+        map.addLayer({
+          id: "filteredFeature",
+          type: "line",
+          source: "filteredFeature",
+          paint: {},
+          layout: {
+            visibility: "visible",
+          },
+        });
+      });
+    });
+  }, [map]);
 
   useEffect(() => {
     if (!map) {
@@ -249,6 +296,23 @@ const Overlay = () => {
         },
       });
 
+      map.addSource("Buffer", {
+        type: "geojson",
+        data: buffered,
+      });
+      map.addLayer({
+        id: "Buffer",
+        type: "fill",
+        source: "Buffer",
+        paint: {
+          "fill-color": "grey",
+          "fill-opacity": 0.2,
+        },
+        layout: {
+          visibility: "visible",
+        },
+      });
+
       // When the cursor enters a feature in the point layer, prepare for dragging.
       map.on("mouseenter", "RoutePoints", function () {
         // map.setPaintProperty("RoutePoints", "circle-color", "#3bb2d0");
@@ -316,6 +380,9 @@ const Overlay = () => {
 
         map.removeLayer("NewWayPointLabels");
         map.removeSource("NewWayPointLabels");
+
+        map.off();
+        map.remove();
       };
     });
   }, [map]);
@@ -323,4 +390,4 @@ const Overlay = () => {
   return null;
 };
 
-export default Overlay;
+export default memo(Overlay);

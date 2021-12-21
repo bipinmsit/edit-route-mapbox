@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, memo } from "react";
 import { MapContextMapbox } from "../Mapbox";
 import "./Controls.css";
 
@@ -74,4 +74,4 @@ const LayerSwitcher = () => {
   );
 };
 
-export default LayerSwitcher;
+export default memo(LayerSwitcher);

@@ -1,6 +1,6 @@
 .Buffer {
   position: absolute;
   z-index: 1;
-  top: 1%;
-  right: 0px;
+  top: 0;
+  left: 0;
 }
